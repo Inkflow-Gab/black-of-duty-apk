@@ -32,10 +32,16 @@ cp capacitor.config.ts "$GAME_DIR/capacitor.config.ts"
 cd "$GAME_DIR"
 
 echo "==> Installing Capacitor"
+# PINNED TO @7, and this was a real bug rather than a nicety. The workflow runs
+# Node 20, and `@capacitor/cli@latest` is currently 8.x, which requires Node >=22
+# — the CLI refused to generate the Android project with
+# "[fatal] The Capacitor CLI requires NodeJS >=22.0.0". `@latest` changes
+# meaning under you; a version range does not. Capacitor 7 supports Node 20 and
+# is the newest major that does.
 npm install --no-save --no-audit --no-fund \
-  @capacitor/cli@latest \
-  @capacitor/core@latest \
-  @capacitor/android@latest
+  @capacitor/cli@^7 \
+  @capacitor/core@^7 \
+  @capacitor/android@^7
 
 echo "==> Generating the Android project"
 rm -rf "$OUT"
