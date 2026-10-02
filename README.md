@@ -8,9 +8,11 @@ game, and the APK can only ever lag or match it.
 
 ## The APK
 
-**Current build:** [v1.0.0 — BlackOfDuty-debug.apk](https://github.com/Inkflow-Gab/black-of-duty-apk/releases/download/v1.0.0/BlackOfDuty-debug.apk)
+**Current build:** [v1.1.0 — BlackOfDuty-debug.apk](https://github.com/Inkflow-Gab/black-of-duty-apk/releases/download/v1.1.0/BlackOfDuty-debug.apk)
 (permanent release asset; the game repo's `APK.md` explains what an APK does and
-does not buy).
+does not buy). v1.1.0 ships the boot-diagnostic fix (the game now starts on
+phones), two new skins + haptics from the game side, and this repo's own
+launcher icon.
 
 ## Build
 
@@ -28,13 +30,17 @@ tagging) pins a copy permanently, which is how v1.0.0 was made.
 | `android-overrides/AndroidManifest.xml` | landscape lock, no permissions, explicit hardware acceleration |
 | `android-overrides/MainActivity.java` | immersive mode, keep-screen-on |
 | `android-overrides/strings.xml` | launcher name |
+| `android-overrides/icon/` | launcher icon res/ tree — adaptive XML, legacy and adaptive-foreground PNGs at five densities |
+| `tools/gen-icons.mjs` | regenerates the icon art (pure Node + zlib, zero dependencies) |
 | `build-apk.sh` | generates the Android project and copies the overrides over it |
 | `APK.md` | what an APK does and does not buy, and what has **not** been verified |
 
 The `android/` project is *generated* by `npx cap add android` in CI rather than
 committed, because it is large, almost entirely boilerplate, and a commit that
-touches it is a hundred generated-file diffs nobody reviews. Only the four files
-above carry intent.
+touches it is a hundred generated-file diffs nobody reviews. Only the intent
+files above are kept, and the icon is one of them: `node tools/gen-icons.mjs`
+draws a tactical crosshair emblem (signed-distance fields, box-filtered to each
+density) so the pipeline needs no image tooling.
 
 ## The honest caveats
 
