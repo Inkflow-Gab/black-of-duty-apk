@@ -35,6 +35,13 @@ concurrency:
 
 jobs:
   build:
+    env:
+      # A single slash. Set here, at the job level, rather than inside the run
+      # block: a `FOO=bar` assignment must directly prefix the command it
+      # configures, and keeping it at the env block is the one form that cannot
+      # be mistyped into a YAML key — which is how the last attempt died with
+      # "BASE_PATH:: command not found".
+      BASE_PATH: '/'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -62,11 +69,7 @@ jobs:
         working-directory: game
         run: |
           npm ci
-          # The game builds with a subpath base for GitHub Pages. Inside an APK the
-          # assets are served from the APK's own origin at the root, so BASE_PATH
-          # must be '/' or every asset request 404s and the app shows the boot
-          # failure panel instead of the game.
-          BASE_PATH: '/' NODE_ENV=production npx vite build
+          NODE_ENV=production npx vite build
           test -f dist/index.html || { echo "dist/index.html missing"; exit 1; }
 
       - name: Report what we wrapped
