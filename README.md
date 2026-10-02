@@ -6,18 +6,25 @@ Builds the APK for [Claude of Duty](https://github.com/Inkflow-Gab/Claude-of-Dut
 assembles it around the game as an external input. One source of truth for the
 game, and the APK can only ever lag or match it.
 
+## The APK
+
+**Current build:** [v1.0.0 — BlackOfDuty-debug.apk](https://github.com/Inkflow-Gab/black-of-duty-apk/releases/download/v1.0.0/BlackOfDuty-debug.apk)
+(permanent release asset; the game repo's `APK.md` explains what an APK does and
+does not buy).
+
 ## Build
 
 Actions tab → **Build APK** → *Run workflow*. Or push a change to this repo.
 
 The APK appears under the run's **Artifacts** section, as
-`black-of-duty-debug-apk`, retained 90 days.
+`black-of-duty-debug-apk`, retained 90 days — and publishing a release (or
+tagging) pins a copy permanently, which is how v1.0.0 was made.
 
 ## What is in here
 
 | file | why it exists |
 |---|---|
-| `capacitor.config.ts` | the wrapper config — `webDir`, app id, and the `https` scheme Capacitor needs for WebGL |
+| `capacitor.config.json` | the wrapper config — `webDir`, app id, and the `https` scheme Capacitor needs for WebGL. Plain JSON on purpose: a `.ts` config would need a local TypeScript install in CI |
 | `android-overrides/AndroidManifest.xml` | landscape lock, no permissions, explicit hardware acceleration |
 | `android-overrides/MainActivity.java` | immersive mode, keep-screen-on |
 | `android-overrides/strings.xml` | launcher name |
