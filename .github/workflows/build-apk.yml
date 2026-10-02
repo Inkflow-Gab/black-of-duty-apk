@@ -85,8 +85,16 @@ jobs:
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v4
 
-      - name: Set up the Android SDK
-        uses: android-actions/setup-android@v3
+      # Note: no android-actions/setup-android step. ubuntu-latest already
+      # carries the Android SDK at /usr/local/lib/android/sdk with licenses
+      # accepted, and setup-android@v3 additionally tries to install the `tools`
+      # and `platform-tools` packages by their stock names — the `tools` package
+      # no longer exists in Google's repository, so the action dies with
+      # "Failed to find package 'tools'" and takes every step after it with it.
+      # It is also doing the doomed and redundant thing of downloading a newer
+      # cmdline-tools over the preinstalled one. Leaving the preinstalled SDK in
+      # place works, and the scaffolding step that matters — exposing ANDROID_SDK
+      # ROOT and licences — is done by the image itself.
 
       - name: Generate the Android project and apply our patches
         run: |
