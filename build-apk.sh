@@ -27,6 +27,23 @@ GAME_DIR="${GAME_DIR:-game}"
 OUT="${OUT:-android}"
 
 echo "==> Capacitor config"
+# Delete any TypeScript/JS config the game might carry BEFORE copying ours in,
+# because Capacitor does not merge configs — it picks exactly one, in a fixed
+# precedence order:
+#
+#     capacitor.config.ts  >  capacitor.config.js  >  capacitor.config.json
+#
+# So a stale `capacitor.config.ts` in the game repo silently beats the JSON we
+# just wrote, and the resulting failure is a lie about the cause:
+#
+#     [error] Could not find installation of TypeScript.
+#            To use capacitor.config.ts files, you must install TypeScript...
+#
+# Read that message and you conclude the fix is `npm install -D typescript` —
+# which "works", and makes things worse, because the stale config is now really
+# in force and our `androidScheme: 'https'` is not. This repository owns the
+# config, so it also owns the absence of any competing one.
+rm -f "$GAME_DIR/capacitor.config.ts" "$GAME_DIR/capacitor.config.js"
 cp capacitor.config.json "$GAME_DIR/capacitor.config.json"
 
 cd "$GAME_DIR"
