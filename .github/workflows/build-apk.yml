@@ -42,7 +42,13 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
-          cache: npm
+          # NO `cache: npm` HERE. This repository has no package.json and no
+          # lockfile — the game does, and its install runs in a subdirectory
+          # after this step. `cache: npm` keys off a lockfile in the repository
+          # ROOT and fails the whole job with "Dependencies lock file is not
+          # found" before a single useful line runs. The game's own `npm ci` is
+          # uncached, which costs a few seconds and is the correct trade for a
+          # wrapper that builds at most a handful of times.
 
       # The game. Public repository, so no token is needed and this workflow
       # cannot write to it — it only ever reads.
