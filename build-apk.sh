@@ -27,7 +27,7 @@ GAME_DIR="${GAME_DIR:-game}"
 OUT="${OUT:-android}"
 
 echo "==> Capacitor config"
-cp capacitor.config.ts "$GAME_DIR/capacitor.config.ts"
+cp capacitor.config.json "$GAME_DIR/capacitor.config.json"
 
 cd "$GAME_DIR"
 
