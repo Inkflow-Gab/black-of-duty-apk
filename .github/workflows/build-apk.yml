@@ -98,7 +98,7 @@ jobs:
 
       - name: Generate the Android project and apply our patches
         run: |
-          ./build-apk.sh
+          bash build-apk.sh
 
       - name: Build the debug APK
         working-directory: android
