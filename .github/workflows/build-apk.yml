@@ -57,6 +57,17 @@ jobs:
           # uncached, which costs a few seconds and is the correct trade for a
           # wrapper that builds at most a handful of times.
 
+      # Capacitor 7's Android template sets source/target compatibility to 21,
+      # and the runner's default javac is 17. Without this step the build dies
+      # with `error: invalid source release: 21` after several minutes of
+      # compiling — the most expensive and least informative failure in this
+      # whole workflow, because it surfaces as a javac flag problem, not as a
+      # JDK problem.
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+
       # The game. Public repository, so no token is needed and this workflow
       # cannot write to it — it only ever reads.
       - name: Check out the game

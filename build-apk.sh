@@ -84,28 +84,17 @@ cp ../android-overrides/strings.xml "$OUT/app/src/main/res/values/strings.xml"
 # The splash background is written to match the in-page loading screen exactly.
 # A system splash in one colour and a page background in another produces a
 # visible flash on every launch, which reads as two separate problems.
-SPLASH="$OUT/app/src/main/res/drawable/splash.xml"
-if [ -d "$OUT/app/src/main/res/drawable" ]; then
-  cat > "$SPLASH" <<'XML'
-<?xml version="1.0" encoding="utf-8"?>
-<!--
-  Matches the loading screen's background exactly (#07090b) so the handoff from
-  the system splash, through the WebView's first paint, to the in-page screen is
-  seamless. A mismatch here is a visible flash on every single launch.
--->
-<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:drawable="@color/splashBackground" />
-</layer-list>
-XML
-  mkdir -p "$OUT/app/src/main/res/values"
-  # Declared with a literal colour rather than a resource reference so the file
-  # cannot fail to resolve at build time.
-  cat > "$OUT/app/src/main/res/values/colors.xml" <<'XML'
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <color name="splashBackground">#FF07090B</color>
-</resources>
-XML
+#
+# ORDER IS LOADING-BEARING: delete what the template shipped, THEN write ours.
+# The previous version wrote splash.xml first and swept up after it, and the
+# sweep took ours with it — the build then failed at resource link time with
+#
+#     error: resource drawable/splash not found
+#
+# because the template's styles.xml references @drawable/splash and our file was
+# the only thing providing it. A sweep that runs last deletes whatever the
+# current step just produced; that ordering is the entire difference.
+if [ -d "$OUT/app/src/main/res" ]; then
   # Delete EVERY splash variant the Capacitor template shipped, not just the one
   # in the bare `drawable/` folder, and not just the one that collides. Two
   # distinct problems, only the first of which is loud:
@@ -123,8 +112,29 @@ XML
   #      and the flash-on-launch we set out to remove would still be there, and
   #      only on hardware.
   #
-  # So: all of them, by name, everywhere.
+  # So: all of them, by name, everywhere. THEN write ours — after a clear
+  # res/ tree, so nothing we produce can be swept up.
   find "$OUT/app/src/main/res" -name 'splash.*' -print -delete
+  mkdir -p "$OUT/app/src/main/res/drawable" "$OUT/app/src/main/res/values"
+  cat > "$OUT/app/src/main/res/drawable/splash.xml" <<'XML'
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Matches the loading screen's background exactly (#07090b) so the handoff from
+  the system splash, through the WebView's first paint, to the in-page screen is
+  seamless. A mismatch here is a visible flash on every single launch.
+-->
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:drawable="@color/splashBackground" />
+</layer-list>
+XML
+  # Declared with a literal colour rather than a resource reference so the file
+  # cannot fail to resolve at build time.
+  cat > "$OUT/app/src/main/res/values/colors.xml" <<'XML'
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="splashBackground">#FF07090B</color>
+</resources>
+XML
 fi
 
 echo "==> Syncing web assets into the project"
