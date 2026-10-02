@@ -106,6 +106,25 @@ XML
     <color name="splashBackground">#FF07090B</color>
 </resources>
 XML
+  # Delete EVERY splash variant the Capacitor template shipped, not just the one
+  # in the bare `drawable/` folder, and not just the one that collides. Two
+  # distinct problems, only the first of which is loud:
+  #
+  #   1. `drawable/splash.xml` alongside `drawable/splash.png` is two resources
+  #      of the same name and type in one folder, and aapt2 rejects it outright:
+  #         Duplicate resources
+  #      That is the visible failure and the easy one.
+  #
+  #   2. The template also ships `drawable-{m,h,xh,xxh,xxxh}dpi/splash.png`.
+  #      Deleting only the duplicate would let the build go green and leave every
+  #      real device showing the template's splash image instead of our colour —
+  #      because a density-qualified resource outranks the unqualified fallback,
+  #      which is exactly the resource we just wrote. The build would be fixed
+  #      and the flash-on-launch we set out to remove would still be there, and
+  #      only on hardware.
+  #
+  # So: all of them, by name, everywhere.
+  find "$OUT/app/src/main/res" -name 'splash.*' -print -delete
 fi
 
 echo "==> Syncing web assets into the project"
